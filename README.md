@@ -3,13 +3,13 @@
 
 [![npm](https://img.shields.io/npm/v/zip-stream-cli.svg?style=flat-square)](https://www.npmjs.com/package/zip-stream-cli)
 
-**Zip stream CLI** is a Node.js library that allows you to extract and display content from various file types inside a zip archive directly in the terminal. The library supports multiple file types such as images, audio files, PDFs, text, spreadsheets, and more, with the option to extend functionality by adding new handlers.
+**Zip stream CLI** is a Node.js library that allows you to extract and display content from various file types inside a zip or tar archive directly in the terminal. The library supports multiple file types such as images, audio files, PDFs, text, spreadsheets, and more, with the option to extend functionality by adding new handlers.
 
 ![ezgif-4-c40395bcdb](https://github.com/user-attachments/assets/f12c2b9f-25da-44d0-8526-969c3bbad6a3)
 
 ## ✨ Features
 
-- **Supports Multiple File Types**: Automatically detect and display content from various file types.
+- **Supports Multiple File Types**: Automatically detect and display content from various file types inside both zip and tar archives.
   
 - **Modular Handler System**: 
   - Easily extend support for new file types by adding custom handlers.
@@ -41,6 +41,7 @@
    ```bash
    npm link
    ```
+
 ## ⚡ Installation global
 
 You can also install globally using npm:
@@ -56,7 +57,8 @@ Once installed globally or linked, you can run the `zip-stream-cli` command from
 ### Example:
 
 ```bash
-zip-stream-cli https://example.com/myzip.zip
+zip-stream-cli https://example.com/myarchive.zip
+zip-stream-cli https://example.com/myarchive.tar.gz
 ```
 
 ## 🛠️ File Type Handlers
