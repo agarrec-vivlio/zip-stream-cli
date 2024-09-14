@@ -1,0 +1,18 @@
+{
+  "name": "remote-zip-extractor",
+  "version": "1.0.0",
+  "description": "A tool to extract files from remote zip archives over HTTP.",
+  "main": "src/RemoteZipFile.js",
+  "bin": {
+    "remote-zip-extractor": "./bin/index.js"
+  },
+  "scripts": {
+    "start": "node bin/index.js"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "inquirer": "^8.2.0",
+    "node-fetch": "^2.6.1"
+  }
+}
