@@ -1,10 +1,10 @@
 {
-  "name": "remote-zip-extractor",
+  "name": "zip-stream-cli",
   "version": "1.0.0",
   "description": "A tool to extract files from remote zip archives over HTTP.",
   "main": "src/RemoteZipFile.js",
   "bin": {
-    "remote-zip-extractor": "./bin/index.js"
+    "zip-stream-cli": "./bin/index.js"
   },
   "scripts": {
     "start": "node bin/index.js"

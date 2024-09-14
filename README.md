@@ -1,7 +1,7 @@
 
-# Remote Zip File Extractor
+# Zip stream CLI
 
-**Remote Zip File Extractor** is a Node.js library that allows you to extract and display content from various file types inside a zip archive directly in the terminal. The library supports multiple file types such as images, audio files, PDFs, text, spreadsheets, and more, with the option to extend functionality by adding new handlers.
+**Zip stream CLI** is a Node.js library that allows you to extract and display content from various file types inside a zip archive directly in the terminal. The library supports multiple file types such as images, audio files, PDFs, text, spreadsheets, and more, with the option to extend functionality by adding new handlers.
 
 ## Features
 
@@ -22,19 +22,19 @@
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/agarrec-vivlio/remote-zip-extractor
-   cd remote-zip-extractor
+   git clone https://github.com/agarrec-vivlio/zip-stream-cli
+   cd zip-stream-cli
    ```
 
 2. Install the required dependencies:
 
    ```bash
-   npm install readline stream chalk pdf-parse xlsx unzipper js-yaml terminal-image
+   npm install
    ```
 
 ## Global Usage with `npm link`
 
-To make the `remote-zip-extractor` command available globally in your terminal, you can use the `npm link` command. This will allow you to use the command without specifying the full path to the executable.
+To make the `zip-stream-cli` command available globally in your terminal, you can use the `npm link` command. This will allow you to use the command without specifying the full path to the executable.
 
 ### Steps to use `npm link`:
 
@@ -44,12 +44,12 @@ To make the `remote-zip-extractor` command available globally in your terminal, 
    npm link
    ```
 
-2. You can now run the `remote-zip-extractor` command from anywhere in your terminal.
+2. You can now run the `zip-stream-cli` command from anywhere in your terminal.
 
 ### Example:
 
 ```bash
-remote-zip-extractor https://example.com/myzip.zip
+zip-stream-cli https://example.com/myzip.zip
 ```
 
 ## File Type Handlers
