@@ -122,18 +122,17 @@ Now, when a file with the `.custom` extension is encountered, the library will u
 
 - **File Listing**:
   
-  <img width="701" alt="Screenshot 2024-09-14 at 17 37 41" src="https://github.com/user-attachments/assets/35c49323-28cf-4108-b7d1-49672798513a">
+  <img width="659" alt="Screenshot 2024-09-14 at 17 48 14" src="https://github.com/user-attachments/assets/fabb378a-a15b-4f2a-83b5-47c4e40ea8f8">
 
 
 - **Image file output**:
 
-  <img width="691" alt="Screenshot 2024-09-14 at 17 38 09" src="https://github.com/user-attachments/assets/905d330e-8f26-4105-b9d9-0a159ac95764">
+  <img width="679" alt="Screenshot 2024-09-14 at 17 48 48" src="https://github.com/user-attachments/assets/dba1143b-ce81-4ed6-ab84-b097034206c5">
 
 
 - **Text file output**:
   
-  <img width="707" alt="Screenshot 2024-09-14 at 17 37 50" src="https://github.com/user-attachments/assets/e6ea751b-444a-4555-ba07-b22a06dc95c0">
-
+  <img width="644" alt="Screenshot 2024-09-14 at 17 48 25" src="https://github.com/user-attachments/assets/fec12566-1e6f-4a85-97ab-0b9037641fef">
 
 
 ## Contributing
