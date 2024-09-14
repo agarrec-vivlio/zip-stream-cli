@@ -3,6 +3,8 @@
 
 **Zip stream CLI** is a Node.js library that allows you to extract and display content from various file types inside a zip archive directly in the terminal. The library supports multiple file types such as images, audio files, PDFs, text, spreadsheets, and more, with the option to extend functionality by adding new handlers.
 
+![ezgif-4-c40395bcdb](https://github.com/user-attachments/assets/f12c2b9f-25da-44d0-8526-969c3bbad6a3)
+
 ## Features
 
 - **Supports Multiple File Types**: Automatically detect and display content from various file types.
