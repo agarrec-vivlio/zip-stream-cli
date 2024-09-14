@@ -127,12 +127,12 @@ Now, when a file with the `.custom` extension is encountered, the library will u
 
 - **Image file output**:
 
-<img width="691" alt="Screenshot 2024-09-14 at 17 38 09" src="https://github.com/user-attachments/assets/905d330e-8f26-4105-b9d9-0a159ac95764">
+  <img width="691" alt="Screenshot 2024-09-14 at 17 38 09" src="https://github.com/user-attachments/assets/905d330e-8f26-4105-b9d9-0a159ac95764">
 
 
 - **Text file output**:
   
-<img width="707" alt="Screenshot 2024-09-14 at 17 37 50" src="https://github.com/user-attachments/assets/e6ea751b-444a-4555-ba07-b22a06dc95c0">
+  <img width="707" alt="Screenshot 2024-09-14 at 17 37 50" src="https://github.com/user-attachments/assets/e6ea751b-444a-4555-ba07-b22a06dc95c0">
 
 
 
