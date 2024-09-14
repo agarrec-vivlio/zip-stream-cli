@@ -38,6 +38,7 @@ Or, to list and display the content of a specific file interactively:
 ```bash
 remote-zip-extractor https://example.com/myzip.zip
 ```
+<img width="696" alt="Screenshot 2024-09-14 at 12 32 38" src="https://github.com/user-attachments/assets/88f0172d-64d0-41b7-a5c1-5559e361ecad">
 
 ## Usage
 
