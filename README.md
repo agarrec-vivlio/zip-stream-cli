@@ -1,23 +1,44 @@
 
 # Remote Zip File Extractor
 
-This is a Node.js package to download and extract individual files from remote zip archives over HTTP, without downloading the entire archive. You can also interactively select files and display their content in the console.
+**Remote Zip File Extractor** is a Node.js library that allows you to extract and display content from various file types inside a zip archive directly in the terminal. The library supports multiple file types such as images, audio files, PDFs, text, spreadsheets, and more, with the option to extend functionality by adding new handlers.
+
+## Features
+
+- **Supports Multiple File Types**: Automatically detect and display content from various file types.
+  
+- **Modular Handler System**: 
+  - Easily extend support for new file types by adding custom handlers.
+  - Handlers for existing file types are dynamically loaded based on the file extension.
+  
+- **Stream and Display Audio Waveforms**: Display waveforms for audio files directly in the terminal.
+  
+- **Display Images**: View images as pixel art directly in the terminal.
+  
+- **Customizable Output**: Each file type is displayed using appropriate handlers, allowing you to customize the way content is shown for different types of files.
 
 ## Installation
 
-To install dependencies:
+1. Clone this repository to your local machine:
 
-```bash
-npm install
-```
+   ```bash
+   git clone https://github.com/agarrec-vivlio/remote-zip-extractor
+   cd remote-zip-extractor
+   ```
+
+2. Install the required dependencies:
+
+   ```bash
+   npm install readline stream chalk pdf-parse xlsx unzipper js-yaml terminal-image
+   ```
 
 ## Global Usage with `npm link`
 
-You can make the `remote-zip-extractor` command available globally in your terminal using the `npm link` command. This allows you to use it without specifying the full path to the executable.
+To make the `remote-zip-extractor` command available globally in your terminal, you can use the `npm link` command. This will allow you to use the command without specifying the full path to the executable.
 
-### Steps to link:
+### Steps to use `npm link`:
 
-1. Run the following command inside the project directory to create a global link:
+1. Inside the project directory, run the following command to create a global link:
 
    ```bash
    npm link
@@ -27,63 +48,99 @@ You can make the `remote-zip-extractor` command available globally in your termi
 
 ### Example:
 
-To extract files from a remote ZIP file:
-
-```bash
-remote-zip-extractor https://example.com/myzip.zip ./output
-```
-
-Or, to list and display the content of a specific file interactively:
-
 ```bash
 remote-zip-extractor https://example.com/myzip.zip
 ```
+
+## File Type Handlers
+
+The library dynamically loads file handlers based on the file extension. Handlers for various file types are stored in the `handlers` directory.
+
+The `typeMappings.json` file maps file extensions to their respective handlers. If a file type is not recognized or doesn't have a dedicated handler, it falls back to the `textHandler` to display the file as plain text.
+
+### Supported File Types
+
+| File Type        | Extensions                               | Handler           |
+|------------------|------------------------------------------|-------------------|
+| Text Files       | `.txt`, `.md`, `.html`                   | `textHandler`     |
+| Audio Files      | `.mp3`, `.wav`, `.ogg`                   | `audioHandler`    |
+| Image Files      | `.png`, `.jpg`, `.gif`, `.bmp`           | `imageHandler`    |
+| PDF Files        | `.pdf`                                   | `pdfHandler`      |
+| Spreadsheet Files| `.xls`, `.xlsx`, `.csv`                  | `spreadsheetHandler` |
+| Code Files       | `.js`, `.py`, `.java`, `.rb`, etc.       | `codeHandler`     |
+| Archive Files    | `.zip`, `.tar`, `.gz`                    | `archiveHandler`  |
+| YAML & JSON Files| `.yaml`, `.yml`, `.json`                 | `jsonYamlHandler` |
+
+### Adding a New File Type
+
+The system is designed to be extensible, making it easy to add new handlers for different file types. Follow the steps below to add support for a new file type.
+
+### Step 1: Create a New Handler
+
+To add support for a new file type, create a new handler file inside the `handlers` directory.
+
+Example: Create `customFileHandler.js` to handle a new file type, say `.custom`.
+
+```javascript
+// handlers/customFileHandler.js
+module.exports = async function handleCustomFile(fileStream) {
+    const chunks = [];
+
+    for await (const chunk of fileStream) {
+        chunks.push(chunk);
+    }
+
+    const fileContent = Buffer.concat(chunks).toString('utf-8');
+    console.log('Displaying custom file content:');
+    console.log(fileContent);  // Replace this with your custom logic to handle the file
+}
+```
+
+### Step 2: Update `typeMappings.json`
+
+Add the new file extension and map it to the newly created handler in `typeMappings.json`.
+
+```json
+{
+    "custom": "customFileHandler",
+    "txt": "textHandler",
+    "md": "textHandler",
+    "json": "jsonYamlHandler",
+    "yaml": "jsonYamlHandler",
+    "mp3": "audioHandler",
+    "wav": "audioHandler",
+    "png": "imageHandler",
+    "jpg": "imageHandler"
+}
+```
+
+### Step 3: Use Your Custom Handler
+
+Now, when a file with the `.custom` extension is encountered, the library will use your `customFileHandler.js` to process and display the file.
 
 ## Screenshots
 
-### Step 1: Listing Files in the ZIP Archive
+- **File Listing**:
+  
+  ![File Listing](screenshots/file-listing.png)
 
-When you run the `remote-zip-extractor` without specifying an output directory, you'll be prompted to interactively select a file from the list of available files in the remote ZIP archive. Below is an example of what the file list looks like:
+- **Image file output**:
 
-<img width="696" alt="Screenshot 2024-09-14 at 12 32 38" src="https://github.com/user-attachments/assets/88f0172d-64d0-41b7-a5c1-5559e361ecad">
+  ![Image File Output](screenshots/image-file-output.png)
 
-As you can see, the terminal displays a list of all the files contained in the ZIP archive, along with their respective sizes in bytes. You can select the file you wish to display.
+- **Text file output**:
+  
+  ![Text File Output](screenshots/text-file-output.png)
 
-### Step 2: Displaying the Content of the Selected File
+## Contributing
 
-Once you select a file from the list, its content will be displayed directly in the terminal. The screenshot below demonstrates what happens when a text-based file is chosen:
+Contributions are welcome! Feel free to fork the repository, create new handlers, fix bugs, or add new features.
 
-<img width="699" alt="Screenshot 2024-09-14 at 12 45 47" src="https://github.com/user-attachments/assets/263795eb-b694-42d5-a617-77715b850e33">
-
-The contents of the file are shown in the terminal output, allowing you to quickly inspect the content without downloading the entire ZIP archive.
-
-## Usage
-
-### Extract all files
-
-You can run the script with:
-
-```bash
-remote-zip-extractor <url_to_zip> <output_directory>
-```
-
-For example:
-
-```bash
-remote-zip-extractor https://example.com/myzip.zip ./output
-```
-
-### List and display a specific file
-
-If no output directory is specified, you'll be prompted to select a file and display its content in the console:
-
-```bash
-remote-zip-extractor https://example.com/myzip.zip
-```
-
-## Credits
-
-This package was inspired by the Python package [unzip-http](https://github.com/saulpw/unzip-http) by Saul Pwanson, which allows extraction of individual files from zip archives over HTTP without downloading the entire archive.
+To contribute:
+1. Fork this repository.
+2. Create a new branch (`git checkout -b feature-new-handler`).
+3. Add your feature or fix.
+4. Push your branch and submit a pull request.
 
 ## License
 

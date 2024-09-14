@@ -1,18 +1,16 @@
 #!/usr/bin/env node
 
-const { createRemoteZipFile } = require('../src/RemoteZipFile');
+const { createRemoteZipFile } = require('../src/remoteZipFile');
 const inquirer = require('inquirer');
 const path = require('path');
-const stream = require('stream');
-const { promisify } = require('util');
-const pipeline = promisify(stream.pipeline);
 
+// Function to list files in the ZIP and let the user select one
 async function listAndSelectFile(zipFile, zipSize) {
     try {
         const files = await zipFile.listFiles(zipSize);
 
         const choices = files
-            .filter(file => !file.isDir()) // On exclut les répertoires
+            .filter(file => !file.isDir()) // Exclude directories
             .map(file => ({
                 name: `${file.filename} (${file.fileSize} bytes)`,
                 value: file
@@ -22,7 +20,7 @@ async function listAndSelectFile(zipFile, zipSize) {
             {
                 type: 'list',
                 name: 'selectedFile',
-                message: 'Select a file to display its content:',
+                message: 'Select a file to display or process:',
                 choices
             }
         ]);
@@ -34,36 +32,33 @@ async function listAndSelectFile(zipFile, zipSize) {
     }
 }
 
-async function displayFileContent(zipFile, selectedFile) {
+// Main function to handle the selected file
+async function processSelectedFile(zipFile, selectedFile) {
     try {
-        const fileStream = await zipFile.openFile(selectedFile);
-        console.log(`\nContent of ${selectedFile.filename}:\n`);
-        await pipeline(fileStream, process.stdout); // Affiche le contenu du fichier dans la console
+        // Pass the selected file to the appropriate handler
+        await zipFile.handleFile(selectedFile);
     } catch (error) {
-        console.error('Error displaying file content:', error);
+        console.error('Error displaying or processing file content:', error);
     }
 }
 
+// Main entry point for the script
 async function main() {
-    const [url, outputPath] = process.argv.slice(2);
+    const [url] = process.argv.slice(2);
 
     if (!url) {
-        console.error('Usage: <url> [<output_path>]');
+        console.error('Usage: <url>');
         process.exit(1);
     }
 
     const zipFile = createRemoteZipFile(url);
     const zipSize = await zipFile.fetchHead();
 
-    // Si un chemin de sortie est fourni, on extrait tous les fichiers dans le répertoire spécifié
-    if (outputPath) {
-        console.log('Extracting all files...');
-        await zipFile.extractAll(outputPath, zipSize);
-    } else {
-        // Sinon, on permet à l'utilisateur de lister et de sélectionner un fichier
-        const selectedFile = await listAndSelectFile(zipFile, zipSize);
-        await displayFileContent(zipFile, selectedFile);
-    }
+    // List files in the ZIP and allow the user to select one
+    const selectedFile = await listAndSelectFile(zipFile, zipSize);
+
+    // Process the selected file (with the appropriate handler)
+    await processSelectedFile(zipFile, selectedFile);
 }
 
 main();
