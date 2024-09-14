@@ -40,6 +40,9 @@ remote-zip-extractor https://example.com/myzip.zip
 ```
 <img width="696" alt="Screenshot 2024-09-14 at 12 32 38" src="https://github.com/user-attachments/assets/88f0172d-64d0-41b7-a5c1-5559e361ecad">
 
+<img width="699" alt="Screenshot 2024-09-14 at 12 45 47" src="https://github.com/user-attachments/assets/263795eb-b694-42d5-a617-77715b850e33">
+
+
 ## Usage
 
 ### Extract all files
