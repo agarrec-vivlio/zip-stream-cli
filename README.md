@@ -127,6 +127,26 @@ Add the new file extension and map it to the newly created handler in `typeMappi
 
 Now, when a file with the `.custom` extension is encountered, the library will use your `customFileHandler.js` to process and display the file.
 
+## 📄 TAR File Streaming
+
+In TAR file handling, the **Zip stream CLI** employs a streaming approach to efficiently process large archives without requiring the entire file to be downloaded and stored in memory.
+
+### How TAR File Streaming Works:
+
+1. **Partial Fetching**: For uncompressed TAR files, the CLI fetches small chunks of the file (e.g., a few megabytes at a time). For compressed `.tar.gz` files, compressed chunks are fetched and decompressed on the fly. This allows the CLI to start listing or extracting files without needing the entire archive.
+
+2. **Entry-by-Entry Processing**: The TAR archive is processed entry by entry, reading file headers and skipping over data unless it is necessary for the current operation. This keeps memory usage low.
+
+3. **File Extraction**: When extracting a specific file, the CLI fetches the portion of the TAR file where the file is located and decompresses only that part (if necessary). The rest of the archive is skipped.
+
+4. **Efficient for Large Archives**: The CLI uses the `tar-stream` library to process entries without buffering the whole file. Compressed archives use `zlib` to decompress data in chunks.
+
+### Advantages:
+
+- **Memory Efficiency**: Only the needed parts of the archive are processed, avoiding the need to load the entire archive into memory.
+- **Streaming**: Files are processed as they are streamed in, improving performance on large files.
+- **Optimized for Compressed Archives**: Compressed TAR files (`.tar.gz`) are streamed and decompressed incrementally.
+
 ## 📸 Screenshots
 
 - **File Listing**:

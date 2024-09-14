@@ -6,7 +6,6 @@ const inquirer = require('inquirer');
 const path = require('path');
 const validUrl = require('valid-url');
 const fetch = require('node-fetch');
-const stream = require('stream');
 
 // Determine the file type based on the URL extension
 const getFileType = (url) => {
@@ -14,13 +13,6 @@ const getFileType = (url) => {
     if (ext === '.zip') return 'zip';
     if (ext === '.tar' || ext === '.gz') return 'tar';
     throw new Error('Unsupported file type. Only .zip, .tar, and .tar.gz are supported.');
-};
-
-// Ensure the fileStream is a readable stream
-const ensureReadableStream = (fileStream) => {
-    if (fileStream instanceof stream.Readable) return fileStream;
-    if (Buffer.isBuffer(fileStream)) return stream.Readable.from(fileStream);
-    throw new Error("fileStream is neither a readable stream nor a Buffer.");
 };
 
 // List files and let the user select one
@@ -46,13 +38,13 @@ const listAndSelectFile = async (files) => {
 };
 
 // Process the selected file
-const processSelectedFile = async (fileStream, selectedFile, fileType, url) => {
+const processSelectedFile = async (selectedFile, fileType, url) => {
     try {
         if (fileType === 'zip') {
             await openZipFile(selectedFile, url);
         } else if (fileType === 'tar') {
             const isGzipped = path.extname(url).toLowerCase() === '.gz';
-            await handleTarFile(selectedFile, isGzipped);
+            await handleTarFile(selectedFile, isGzipped, url);
         }
     } catch (error) {
         console.error('Error processing file content:', error);
@@ -69,21 +61,22 @@ const main = async () => {
         }
 
         const fileType = getFileType(url);
-        const response = await fetch(url);
-        let fileStream = ensureReadableStream(response.body);
-
         let files;
+
         if (fileType === 'zip') {
-            const contentLength = response.headers.get('content-length');
+            const headResponse = await fetch(url, { method: 'HEAD' });
+            const contentLength = headResponse.headers.get('content-length');
             files = await listZipFiles(contentLength, url);
         } else if (fileType === 'tar') {
+            const response = await fetch(url);
+            const fileStream = response.body;
+            await bufferFileStream(fileStream); // Buffer the file stream
             const isGzipped = path.extname(url).toLowerCase() === '.gz';
-            await bufferFileStream(fileStream);
-            files = await listTarFiles(isGzipped);
+            files = await listTarFiles(url, isGzipped); // List files with partial fetch
         }
 
         const selectedFile = await listAndSelectFile(files);
-        await processSelectedFile(fileStream, selectedFile, fileType, url);
+        await processSelectedFile(selectedFile, fileType, url);
 
     } catch (error) {
         console.error('An error occurred during processing:', error);

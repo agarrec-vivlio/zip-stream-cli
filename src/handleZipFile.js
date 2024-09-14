@@ -26,17 +26,20 @@ const createZipFileInfo = (filename, date_time, headerOffset, compressType, comp
     };
 };
 
-// Function to get the Central Directory of a ZIP file
+// Function to fetch the Central Directory of a ZIP file
 const getCentralDirectory = async (zipSize, url) => {
     try {
+        // Fetch the last 65KB (maximum size where EOCD can be located)
         const eocdData = await getRange(url, Math.max(zipSize - 65536, 0), 65536);
-        const eocdOffset = eocdData.lastIndexOf(Buffer.from('504b0506', 'hex'));
+        const eocdOffset = eocdData.lastIndexOf(Buffer.from('504b0506', 'hex')); // EOCD signature
 
         if (eocdOffset === -1) throw new Error('Cannot find the End of Central Directory (EOCD) in the ZIP file.');
 
+        // Read Central Directory offset and size from EOCD
         const cdirOffset = eocdData.readUInt32LE(eocdOffset + 16);
         const cdirSize = eocdData.readUInt32LE(eocdOffset + 12);
 
+        // Fetch the Central Directory
         return getRange(url, cdirOffset, cdirSize);
     } catch (error) {
         console.error('Error fetching Central Directory:', error);
@@ -44,6 +47,7 @@ const getCentralDirectory = async (zipSize, url) => {
     }
 };
 
+// Function to list files from the Central Directory of a ZIP file
 const listZipFiles = async (zipSize, url) => {
     try {
         console.log(`ZIP Size: ${zipSize}, URL: ${url}`);
@@ -79,7 +83,6 @@ const listZipFiles = async (zipSize, url) => {
         throw error;
     }
 };
-
 
 // Open a ZIP file, process it with the correct handler based on the extension
 const openZipFile = async (file, url) => {

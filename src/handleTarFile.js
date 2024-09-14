@@ -1,10 +1,13 @@
 const zlib = require('zlib');
 const tar = require('tar-stream'); // Tar stream for handling tar files
 const stream = require('stream');
+const fetch = require('node-fetch');
 const path = require('path');
 const getFileHandler = require('./getFileHandler');
 
-let globalBuffer = null; // Global buffer to store the stream content
+
+// Global buffer to store the stream content
+let globalBuffer = null;
 
 // Function to read the entire stream and store it in a global buffer
 const bufferFileStream = async (fileStream) => {
@@ -25,14 +28,24 @@ const bufferFileStream = async (fileStream) => {
     });
 };
 
+// Helper to fetch byte ranges (for partial TAR processing)
+const fetchByteRange = async (url, start, end) => {
+    const headers = {
+        Range: `bytes=${start}-${end}`,
+    };
+    const response = await fetch(url, { headers });
+    if (!response.ok) throw new Error(`Failed to fetch byte range ${start}-${end}`);
+    return response.body;
+};
+
 // Handle .tar and .tar.gz (gzip) files
-const handleTarFile = async (selectedFile, isGzipped) => {
-    return new Promise((resolve, reject) => {
+const handleTarFile = async (selectedFile, isGzipped, url) => {
+    return new Promise(async (resolve, reject) => {
         try {
             const extract = tar.extract();
             let fileFound = false; // To track if the file is found
 
-            const fileStream = stream.Readable.from(globalBuffer); // Create a readable stream from global buffer
+            const fileStream = stream.Readable.from(globalBuffer); // Create a readable stream from the global buffer
 
             extract.on('entry', (header, entryStream, next) => {
                 if (fileFound) {
@@ -80,8 +93,17 @@ const handleTarFile = async (selectedFile, isGzipped) => {
                 }
             });
 
-            const streamHandler = isGzipped ? zlib.createGunzip() : extract;
-            fileStream.pipe(isGzipped ? streamHandler.pipe(extract) : streamHandler); // Handle gzipped or plain tar files
+            let tarStream;
+            if (isGzipped) {
+                // Fetch gzipped content, decompress on the fly
+                const gzStream = await fetchByteRange(url, 0, 2000000); // Fetch 2MB instead of 100KB
+                tarStream = gzStream.pipe(zlib.createGunzip());
+            } else {
+                // Fetch the tar content directly in larger chunks
+                tarStream = await fetchByteRange(url, 0, 2000000); // Fetch 2MB instead of 512KB
+            }
+
+            tarStream.pipe(extract); // Pipe the partial stream to the TAR extractor
         } catch (err) {
             console.error('Error handling tar file:', err);
             reject(err); // Reject if there's an error
@@ -89,20 +111,18 @@ const handleTarFile = async (selectedFile, isGzipped) => {
     });
 };
 
-// List files from a .tar or .tar.gz archive without buffering the entire stream
-const listTarFiles = async (isGzipped) => {
-    return new Promise((resolve, reject) => {
-        const extract = tar.extract();
+// List files from a .tar or .tar.gz archive without fetching the entire stream
+const listTarFiles = async (url, isGzipped) => {
+    return new Promise(async (resolve, reject) => {
         const files = [];
-
-        const fileStream = stream.Readable.from(globalBuffer); // Recreate a readable stream from the global buffer
+        const extract = tar.extract();
 
         extract.on('entry', (header, entryStream, next) => {
-            const isDirectory = header.type === 'directory'; // Detect if the entry is a directory
+            const isDirectory = header.type === 'directory';
             const fileInfo = {
                 filename: header.name,
                 fileSize: header.size,
-                isDir: isDirectory, // Define isDir based on header type
+                isDir: isDirectory,
             };
             files.push(fileInfo); // Push file info to the list
 
@@ -118,13 +138,16 @@ const listTarFiles = async (isGzipped) => {
             reject(err); // Handle errors
         });
 
+        let tarStream;
         if (isGzipped) {
-            fileStream.pipe(zlib.createGunzip()).pipe(extract); // Handle .tar.gz files
+            const gzStream = await fetchByteRange(url, 0, 2000000); // Fetch 2MB
+            tarStream = gzStream.pipe(zlib.createGunzip());
         } else {
-            fileStream.pipe(extract); // Handle plain .tar files
+            tarStream = await fetchByteRange(url, 0, 2000000); // Fetch 2MB
         }
+
+        tarStream.pipe(extract); // Pipe the partial stream to the TAR extractor
     });
 };
-
 
 module.exports = { handleTarFile, listTarFiles, bufferFileStream };
