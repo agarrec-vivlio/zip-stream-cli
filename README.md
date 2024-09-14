@@ -1,11 +1,13 @@
 
-# Zip stream CLI
+# 🚀 Zip stream CLI
+
+[![npm](https://img.shields.io/npm/v/zip-stream-cli.svg?style=flat-square)](https://www.npmjs.com/package/zip-stream-cli)
 
 **Zip stream CLI** is a Node.js library that allows you to extract and display content from various file types inside a zip archive directly in the terminal. The library supports multiple file types such as images, audio files, PDFs, text, spreadsheets, and more, with the option to extend functionality by adding new handlers.
 
 ![ezgif-4-c40395bcdb](https://github.com/user-attachments/assets/f12c2b9f-25da-44d0-8526-969c3bbad6a3)
 
-## Features
+## ✨ Features
 
 - **Supports Multiple File Types**: Automatically detect and display content from various file types.
   
@@ -13,13 +15,13 @@
   - Easily extend support for new file types by adding custom handlers.
   - Handlers for existing file types are dynamically loaded based on the file extension.
   
-- **Stream and Display Audio Waveforms**: Display waveforms for audio files directly in the terminal.
+- **🎵 Stream and Display Audio Waveforms**: Display waveforms for audio files directly in the terminal.
   
-- **Display Images**: View images as pixel art directly in the terminal.
+- **🖼️ Display Images**: View images as pixel art directly in the terminal.
   
-- **Customizable Output**: Each file type is displayed using appropriate handlers, allowing you to customize the way content is shown for different types of files.
+- **⚙️ Customizable Output**: Each file type is displayed using appropriate handlers, allowing you to customize the way content is shown for different types of files.
 
-## Installation
+## ⚡ Installation dev
 
 1. Clone this repository to your local machine:
 
@@ -34,19 +36,22 @@
    npm install
    ```
 
-## Global Usage with `npm link`
-
-To make the `zip-stream-cli` command available globally in your terminal, you can use the `npm link` command. This will allow you to use the command without specifying the full path to the executable.
-
-### Steps to use `npm link`:
-
-1. Inside the project directory, run the following command to create a global link:
+3. Link the project globally using npm link:
 
    ```bash
    npm link
    ```
+## ⚡ Installation global
 
-2. You can now run the `zip-stream-cli` command from anywhere in your terminal.
+You can also install globally using npm:
+
+   ```bash
+   npm install -g zip-stream-cli
+   ```
+
+## 🌐 Global Usage
+
+Once installed globally or linked, you can run the `zip-stream-cli` command from anywhere in your terminal.
 
 ### Example:
 
@@ -54,7 +59,7 @@ To make the `zip-stream-cli` command available globally in your terminal, you ca
 zip-stream-cli https://example.com/myzip.zip
 ```
 
-## File Type Handlers
+## 🛠️ File Type Handlers
 
 The library dynamically loads file handlers based on the file extension. Handlers for various file types are stored in the `handlers` directory.
 
@@ -120,24 +125,24 @@ Add the new file extension and map it to the newly created handler in `typeMappi
 
 Now, when a file with the `.custom` extension is encountered, the library will use your `customFileHandler.js` to process and display the file.
 
-## Screenshots
+## 📸 Screenshots
 
 - **File Listing**:
   
   <img width="659" alt="Screenshot 2024-09-14 at 17 48 14" src="https://github.com/user-attachments/assets/fabb378a-a15b-4f2a-83b5-47c4e40ea8f8">
 
 
-- **Image file output**:
+- **🖼️ Image file output**:
 
   <img width="679" alt="Screenshot 2024-09-14 at 17 48 48" src="https://github.com/user-attachments/assets/dba1143b-ce81-4ed6-ab84-b097034206c5">
 
 
-- **Text file output**:
+- **📄 Text file output**:
   
   <img width="644" alt="Screenshot 2024-09-14 at 17 48 25" src="https://github.com/user-attachments/assets/fec12566-1e6f-4a85-97ab-0b9037641fef">
 
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Feel free to fork the repository, create new handlers, fix bugs, or add new features.
 
@@ -147,6 +152,6 @@ To contribute:
 3. Add your feature or fix.
 4. Push your branch and submit a pull request.
 
-## License
+## 📜 License
 
 This project is licensed under the MIT License.
