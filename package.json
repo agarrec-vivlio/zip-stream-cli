@@ -3,13 +3,18 @@
   "version": "1.0.0",
   "description": "A tool to extract files from remote zip archives over HTTP.",
   "main": "src/RemoteZipFile.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agarrec-vivlio/zip-stream-cli.git"
+  },
+  "author": "Alexandre-g <garrec.alexandre@gmail.com> (https://github.com/agarrec-vivlio)",
   "bin": {
     "zip-stream-cli": "./bin/index.js"
   },
   "scripts": {
-    "start": "node bin/index.js"
+    "start": "node bin/index.js",
+    "release": "release-it"
   },
-  "author": "Your Name",
   "license": "MIT",
   "dependencies": {
     "asciify-image": "^0.1.10",
@@ -27,5 +32,14 @@
     "unzipper": "^0.12.3",
     "valid-url": "^1.0.9",
     "xlsx": "^0.18.5"
+  },
+  "release-it": {
+    "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+    "github": {
+      "release": true
+    }
+  },
+  "devDependencies": {
+    "release-it": "^17.6.0"
   }
 }
