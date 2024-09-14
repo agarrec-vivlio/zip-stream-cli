@@ -2,16 +2,17 @@ const fetch = require('node-fetch');
 const zlib = require('zlib');
 const stream = require('stream');
 const path = require('path');
-const getFileHandler = require('./getFileHandler')
+const getFileHandler = require('./getFileHandler');
 
 // Fallback for displaying files as text
 async function displayFileAsText(fileStream) {
-    const chunks = [];
-    for await (const chunk of fileStream) {
-        chunks.push(chunk);
+    try {
+        for await (const chunk of fileStream) {
+            process.stdout.write(chunk.toString());
+        }
+    } catch (err) {
+        console.error("Error displaying file as text:", err);
     }
-    const fileContent = Buffer.concat(chunks).toString();
-    console.log(`File content: \n${fileContent}`);
 }
 
 // Create information about the ZIP file entries
@@ -40,25 +41,35 @@ const createRemoteZipInfo = (filename, date_time, headerOffset, compressType, co
 };
 
 // Create the ZIP file handler
-const createRemoteZipFile = (url) => {
+const createRemoteZipFile = (url, maxFileSizeMB = 100) => {
     const fetchHead = async () => {
-        const response = await fetch(url, { method: 'HEAD' });
-        const acceptRanges = response.headers.get('Accept-Ranges');
-        if (!acceptRanges || acceptRanges !== 'bytes') {
-            console.warn(`${new URL(url).hostname} does not support byte ranges. Proceeding anyway...`);
+        try {
+            const response = await fetch(url, { method: 'HEAD' });
+            const acceptRanges = response.headers.get('Accept-Ranges');
+            if (!acceptRanges || acceptRanges !== 'bytes') {
+                console.warn(`${new URL(url).hostname} does not support byte ranges. Proceeding anyway...`);
+            }
+            const zipSize = parseInt(response.headers.get('Content-Length'), 10);
+            return zipSize;
+        } catch (err) {
+            console.error("Error fetching ZIP file head:", err);
+            throw err;
         }
-        const zipSize = parseInt(response.headers.get('Content-Length'), 10);
-        return zipSize;
     };
 
     const getRange = async (start, length) => {
-        const response = await fetch(url, {
-            headers: { 'Range': `bytes=${start}-${start + length - 1}` }
-        });
-        if (!response.ok) {
-            throw new Error(`Failed to fetch range ${start}-${start + length - 1}: ${response.statusText}`);
+        try {
+            const response = await fetch(url, {
+                headers: { 'Range': `bytes=${start}-${start + length - 1}` }
+            });
+            if (!response.ok) {
+                throw new Error(`Failed to fetch range ${start}-${start + length - 1}: ${response.statusText}`);
+            }
+            return Buffer.from(await response.arrayBuffer());
+        } catch (err) {
+            console.error("Error fetching range:", err);
+            throw err;
         }
-        return Buffer.from(await response.arrayBuffer());
     };
 
     const getCentralDirectory = async (zipSize) => {
@@ -92,7 +103,13 @@ const createRemoteZipFile = (url) => {
                 cdirData.readUInt32LE(offset + 24)
             );
 
-            files.push(fileInfo);
+            // Check file size limit before adding to the list
+            // if (fileInfo.fileSize > maxFileSizeMB * 1024 * 1024) {
+            //     console.warn(`Skipping large file ${fileName} (${fileInfo.fileSize} bytes)`);
+            // } else {
+                files.push(fileInfo);
+            // }
+
             offset += 46 + fileNameLength + extraFieldLength + cdirData.readUInt16LE(offset + 32);
         }
 
@@ -119,13 +136,18 @@ const createRemoteZipFile = (url) => {
     };
 
     const handleFile = async (file) => {
-        const fileStream = await openFile(file);
-        const handler = await getFileHandler(file.extension);
+        try {
+            const fileStream = await openFile(file);
+            const handler = await getFileHandler(file.extension);
 
-        if (handler) {
-            await handler(fileStream);
-        } else {
-            // await displayFileAsText(fileStream);  // Fallback to text
+            if (handler) {
+                await handler(fileStream);
+            } else {
+                // Fallback to text if no handler is available
+                await displayFileAsText(fileStream);
+            }
+        } catch (err) {
+            console.error(`Error handling file ${file.filename}:`, err);
         }
     };
 

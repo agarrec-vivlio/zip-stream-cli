@@ -25,6 +25,7 @@
     "stream": "^0.0.3",
     "terminal-image": "^3.0.0",
     "unzipper": "^0.12.3",
+    "valid-url": "^1.0.9",
     "xlsx": "^0.18.5"
   }
 }
