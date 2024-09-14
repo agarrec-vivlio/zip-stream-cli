@@ -122,15 +122,19 @@ Now, when a file with the `.custom` extension is encountered, the library will u
 
 - **File Listing**:
   
-  ![File Listing](screenshots/file-listing.png)
+  <img width="701" alt="Screenshot 2024-09-14 at 17 37 41" src="https://github.com/user-attachments/assets/35c49323-28cf-4108-b7d1-49672798513a">
+
 
 - **Image file output**:
 
-  ![Image File Output](screenshots/image-file-output.png)
+<img width="691" alt="Screenshot 2024-09-14 at 17 38 09" src="https://github.com/user-attachments/assets/905d330e-8f26-4105-b9d9-0a159ac95764">
+
 
 - **Text file output**:
   
-  ![Text File Output](screenshots/text-file-output.png)
+<img width="707" alt="Screenshot 2024-09-14 at 17 37 50" src="https://github.com/user-attachments/assets/e6ea751b-444a-4555-ba07-b22a06dc95c0">
+
+
 
 ## Contributing
 
