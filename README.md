@@ -3,13 +3,13 @@
 
 [![npm](https://img.shields.io/npm/v/zip-stream-cli.svg?style=flat-square)](https://www.npmjs.com/package/zip-stream-cli)
 
-**Zip stream CLI** is a Node.js library that allows you to extract and display content from various file types inside a zip archive directly in the terminal. The library supports multiple file types such as images, audio files, PDFs, text, spreadsheets, and more, with the option to extend functionality by adding new handlers.
+**Zip stream CLI** is a Node.js library that allows you to extract and display content from various file types inside a zip or tar archive directly in the terminal. The library supports multiple file types such as images, audio files, PDFs, text, spreadsheets, and more, with the option to extend functionality by adding new handlers.
 
 ![ezgif-4-c40395bcdb](https://github.com/user-attachments/assets/f12c2b9f-25da-44d0-8526-969c3bbad6a3)
 
 ## ✨ Features
 
-- **Supports Multiple File Types**: Automatically detect and display content from various file types.
+- **Supports Multiple File Types**: Automatically detect and display content from various file types inside both zip and tar archives.
   
 - **Modular Handler System**: 
   - Easily extend support for new file types by adding custom handlers.
@@ -41,6 +41,7 @@
    ```bash
    npm link
    ```
+
 ## ⚡ Installation global
 
 You can also install globally using npm:
@@ -56,7 +57,8 @@ Once installed globally or linked, you can run the `zip-stream-cli` command from
 ### Example:
 
 ```bash
-zip-stream-cli https://example.com/myzip.zip
+zip-stream-cli https://example.com/myarchive.zip
+zip-stream-cli https://example.com/myarchive.tar.gz
 ```
 
 ## 🛠️ File Type Handlers
@@ -124,6 +126,26 @@ Add the new file extension and map it to the newly created handler in `typeMappi
 ### Step 3: Use Your Custom Handler
 
 Now, when a file with the `.custom` extension is encountered, the library will use your `customFileHandler.js` to process and display the file.
+
+## 📄 TAR File Streaming
+
+In TAR file handling, the **Zip stream CLI** employs a streaming approach to efficiently process large archives without requiring the entire file to be downloaded and stored in memory.
+
+### How TAR File Streaming Works:
+
+1. **Partial Fetching**: For uncompressed TAR files, the CLI fetches small chunks of the file (e.g., a few megabytes at a time). For compressed `.tar.gz` files, compressed chunks are fetched and decompressed on the fly. This allows the CLI to start listing or extracting files without needing the entire archive.
+
+2. **Entry-by-Entry Processing**: The TAR archive is processed entry by entry, reading file headers and skipping over data unless it is necessary for the current operation. This keeps memory usage low.
+
+3. **File Extraction**: When extracting a specific file, the CLI fetches the portion of the TAR file where the file is located and decompresses only that part (if necessary). The rest of the archive is skipped.
+
+4. **Efficient for Large Archives**: The CLI uses the `tar-stream` library to process entries without buffering the whole file. Compressed archives use `zlib` to decompress data in chunks.
+
+### Advantages:
+
+- **Memory Efficiency**: Only the needed parts of the archive are processed, avoiding the need to load the entire archive into memory.
+- **Streaming**: Files are processed as they are streamed in, improving performance on large files.
+- **Optimized for Compressed Archives**: Compressed TAR files (`.tar.gz`) are streamed and decompressed incrementally.
 
 ## 📸 Screenshots
 
