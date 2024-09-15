@@ -4,7 +4,16 @@ const path = require('path');
 const { getRange } = require('./fileHandler');
 const getFileHandler = require('./getFileHandler');
 
-// Create information about the ZIP file entries
+/**
+ * Creates an object containing information about a ZIP file entry.
+ * @param {string} filename - The name of the file in the ZIP archive.
+ * @param {number} date_time - The date and time encoded in the ZIP entry.
+ * @param {number} headerOffset - The offset of the file header in the ZIP archive.
+ * @param {number} compressType - The compression method used for the file.
+ * @param {number} compressSize - The compressed size of the file.
+ * @param {number} fileSize - The uncompressed size of the file.
+ * @returns {Object} - An object containing file information and metadata.
+ */
 const createZipFileInfo = (filename, date_time, headerOffset, compressType, compressSize, fileSize) => {
     const getBits = (val, ...args) => args.map(n => {
         const bit = val & (2 ** n - 1);
@@ -26,20 +35,22 @@ const createZipFileInfo = (filename, date_time, headerOffset, compressType, comp
     };
 };
 
-// Function to fetch the Central Directory of a ZIP file
+/**
+ * Fetches the Central Directory of a ZIP file.
+ * @param {number} zipSize - The total size of the ZIP file.
+ * @param {string} url - The URL of the ZIP file.
+ * @returns {Promise<Buffer>} - A promise that resolves with the Central Directory data.
+ */
 const getCentralDirectory = async (zipSize, url) => {
     try {
-        // Fetch the last 65KB (maximum size where EOCD can be located)
         const eocdData = await getRange(url, Math.max(zipSize - 65536, 0), 65536);
-        const eocdOffset = eocdData.lastIndexOf(Buffer.from('504b0506', 'hex')); // EOCD signature
+        const eocdOffset = eocdData.lastIndexOf(Buffer.from('504b0506', 'hex'));
 
         if (eocdOffset === -1) throw new Error('Cannot find the End of Central Directory (EOCD) in the ZIP file.');
 
-        // Read Central Directory offset and size from EOCD
         const cdirOffset = eocdData.readUInt32LE(eocdOffset + 16);
         const cdirSize = eocdData.readUInt32LE(eocdOffset + 12);
 
-        // Fetch the Central Directory
         return getRange(url, cdirOffset, cdirSize);
     } catch (error) {
         console.error('Error fetching Central Directory:', error);
@@ -47,10 +58,14 @@ const getCentralDirectory = async (zipSize, url) => {
     }
 };
 
-// Function to list files from the Central Directory of a ZIP file
+/**
+ * Lists files from the Central Directory of a ZIP file.
+ * @param {number} zipSize - The total size of the ZIP file.
+ * @param {string} url - The URL of the ZIP file.
+ * @returns {Promise<Object[]>} - A promise that resolves with an array of file information.
+ */
 const listZipFiles = async (zipSize, url) => {
     try {
-        console.log(`ZIP Size: ${zipSize}, URL: ${url}`);
         const cdirData = await getCentralDirectory(zipSize, url);
         const files = [];
 
@@ -60,9 +75,8 @@ const listZipFiles = async (zipSize, url) => {
             const extraFieldLength = cdirData.readUInt16LE(offset + 30);
             const fileName = cdirData.slice(offset + 46, offset + 46 + fileNameLength).toString('utf-8');
 
-            // Compressed and uncompressed sizes
-            const compressSize = cdirData.readUInt32LE(offset + 20);  // Compressed size
-            const uncompressSize = cdirData.readUInt32LE(offset + 24); // Uncompressed size
+            const compressSize = cdirData.readUInt32LE(offset + 20);
+            const uncompressSize = cdirData.readUInt32LE(offset + 24);
 
             const fileInfo = createZipFileInfo(
                 fileName,
@@ -84,7 +98,12 @@ const listZipFiles = async (zipSize, url) => {
     }
 };
 
-// Open a ZIP file, process it with the correct handler based on the extension
+/**
+ * Opens a ZIP file and processes it using the appropriate handler based on the file extension.
+ * @param {Object} file - The file information object.
+ * @param {string} url - The URL of the ZIP file.
+ * @returns {Promise<void>} - A promise that resolves when the file is processed.
+ */
 const openZipFile = async (file, url) => {
     try {
         const localHeaderData = await getRange(url, file.headerOffset, 30);
@@ -99,14 +118,13 @@ const openZipFile = async (file, url) => {
 
         let fileStream;
         if (file.compressType === 0) {
-            fileStream = stream.Readable.from(fileData); // No compression
+            fileStream = stream.Readable.from(fileData);
         } else if (file.compressType === 8) {
-            fileStream = stream.Readable.from(fileData).pipe(zlib.createInflateRaw()); // Deflate compression
+            fileStream = stream.Readable.from(fileData).pipe(zlib.createInflateRaw());
         } else {
             throw new Error(`Unsupported compression method: ${file.compressType}`);
         }
 
-        // Dynamically load the appropriate handler based on file extension
         const extension = path.extname(file.filename).substring(1);
         const handler = await getFileHandler(extension);
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { listZipFiles, openZipFile } = require('../src/handleZipFile');
-const { handleTarFile, listTarFiles, bufferFileStream } = require('../src/handleTarFile');
+const { handleTarFile, listTarFiles } = require('../src/handleTarFile');
 const inquirer = require('inquirer');
 const path = require('path');
 const validUrl = require('valid-url');
@@ -68,9 +68,6 @@ const main = async () => {
             const contentLength = headResponse.headers.get('content-length');
             files = await listZipFiles(contentLength, url);
         } else if (fileType === 'tar') {
-            const response = await fetch(url);
-            const fileStream = response.body;
-            await bufferFileStream(fileStream); // Buffer the file stream
             const isGzipped = path.extname(url).toLowerCase() === '.gz';
             files = await listTarFiles(url, isGzipped); // List files with partial fetch
         }
