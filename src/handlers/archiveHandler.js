@@ -1,9 +1,8 @@
-const unzipper = require('unzipper');  // For zip, you can extend for tar
+const unzipper = require("unzipper");
 
 module.exports = async function handleArchiveFile(fileStream) {
-    fileStream.pipe(unzipper.Parse())
-        .on('entry', (entry) => {
-            console.log(`File: ${entry.path}, Type: ${entry.type}`);
-            entry.autodrain();  // Auto-handle the stream after listing
-        });
-}
+  fileStream.pipe(unzipper.Parse()).on("entry", (entry) => {
+    console.log(`File: ${entry.path}, Type: ${entry.type}`);
+    entry.autodrain();
+  });
+};
