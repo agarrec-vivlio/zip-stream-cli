@@ -1,18 +1,18 @@
-const pdf = require('pdf-parse');
+const pdf = require("pdf-parse");
 
 module.exports = async function handlePdfFile(fileStream) {
-    const chunks = [];
-    
-    for await (const chunk of fileStream) {
-        chunks.push(chunk);
-    }
+  const chunks = [];
 
-    const buffer = Buffer.concat(chunks);
+  for await (const chunk of fileStream) {
+    chunks.push(chunk);
+  }
 
-    try {
-        const data = await pdf(buffer);
-        console.log(data.text);  // Display extracted text from PDF
-    } catch (err) {
-        console.error('Error parsing PDF:', err.message);
-    }
-}
+  const buffer = Buffer.concat(chunks);
+
+  try {
+    const data = await pdf(buffer);
+    console.log(data.text); // Display extracted text from PDF
+  } catch (err) {
+    console.error("Error parsing PDF:", err.message);
+  }
+};

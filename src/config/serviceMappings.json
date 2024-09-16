@@ -1,0 +1,7 @@
+{
+  "zip": "zipService",
+  "tar": "tarService",
+  "rar": "rarService",
+  "gz": "gzipService",
+  "t7": "t7Service"
+}
