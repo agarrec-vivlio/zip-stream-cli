@@ -1,10 +1,10 @@
 const zlib = require("zlib");
 const tar = require("tar-stream");
 const stream = require("stream");
-const fetch = require("node-fetch");
 const path = require("path");
 const getFileHandler = require("../utils/fileHandler");
 const { fetchByteRange } = require("../utils/rangeFetcher");
+const { getIsGzipped } = require("../utils/files");
 
 /**
  * Handles a .tar or .tar.gz (gzip) file by extracting and processing the specified file.
@@ -16,7 +16,7 @@ const { fetchByteRange } = require("../utils/rangeFetcher");
 const processFile = async (selectedFile, url) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const isGzipped = path.extname(url).toLowerCase() === ".gz";
+      const isGzipped = getIsGzipped(url);
 
       const extract = tar.extract();
       let fileFound = false;
@@ -90,7 +90,8 @@ const processFile = async (selectedFile, url) => {
  */
 const listFiles = async (url) => {
   return new Promise(async (resolve, reject) => {
-    const isGzipped = path.extname(url).toLowerCase() === ".gz";
+    const isGzipped = getIsGzipped(url);
+
     const files = [];
     const extract = tar.extract();
 

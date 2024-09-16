@@ -2,22 +2,14 @@ const path = require("path");
 const fs = require("fs").promises;
 const typeMappingsPath = path.join(__dirname, "/../config/typeMappings.json");
 
-let cachedTypeMappings = null;
-let cachedHandlers = {};
-
 /**
- * Loads the handler module if it's not already cached.
+ * Loads the handler module without caching.
  * @param {string} handlerName - The name of the handler file (without extension).
  * @returns {Promise<Object>} - The loaded handler module.
  */
 async function loadHandler(handlerName) {
-  if (cachedHandlers[handlerName]) {
-    return cachedHandlers[handlerName];
-  }
-
   try {
     const handler = require(`../handlers/${handlerName}.js`);
-    cachedHandlers[handlerName] = handler;
     return handler;
   } catch (err) {
     console.error(`Error loading handler "${handlerName}": ${err.message}`);
@@ -26,18 +18,13 @@ async function loadHandler(handlerName) {
 }
 
 /**
- * Loads the file type mappings from the JSON file, with caching.
+ * Loads the file type mappings from the JSON file without caching.
  * @returns {Promise<Object>} - The parsed JSON object containing the type mappings.
  */
 async function loadTypeMappings() {
-  if (cachedTypeMappings) {
-    return cachedTypeMappings;
-  }
-
   try {
     const typeMappingsContent = await fs.readFile(typeMappingsPath, "utf-8");
-    cachedTypeMappings = JSON.parse(typeMappingsContent);
-    return cachedTypeMappings;
+    return JSON.parse(typeMappingsContent);
   } catch (err) {
     console.error(`Error loading type mappings: ${err.message}`);
     throw err;
