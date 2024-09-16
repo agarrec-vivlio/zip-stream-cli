@@ -4,8 +4,13 @@ const readline = require('readline');
 const cliProgress = require('cli-progress');
 
 /**
- * Handles audio playback with play/pause functionality and progress bar using Speaker.
- * @param {stream.Readable} audioStream - The audio stream to process.
+ * Processes and plays an audio stream with real-time playback progress shown in the CLI.
+ * The function buffers the audio stream, plays it through the speaker, and displays
+ * a progress bar in the terminal to track playback. The process can be stopped with `Ctrl+C`.
+ * 
+ * @param {stream.Readable} audioStream - The audio stream to process and play.
+ * 
+ * @returns {Promise<void>} A promise that resolves when the audio playback is completed.
  */
 async function handleAudioStreamWithPlayPause(audioStream) {
     const chunks = [];
