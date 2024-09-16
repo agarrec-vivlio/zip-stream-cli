@@ -152,4 +152,4 @@ const processFile = async (file, url) => {
   }
 };
 
-module.exports = { listFiles, processFile, getCentralDirectory };
+module.exports = { listFiles, processFile };
